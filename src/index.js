@@ -1,13 +1,40 @@
 export default class Barrage {
   constructor (config) {
-    let {el} = config
+    this._width = 0
+    this._height = 0
+    let {el, defaultFontColor = '#fff', speedRatio = 1} = config
     if (typeof el === 'string') el = document.querySelector(`#${el}`)
-    el.style.position = 'absolute'
-    let style = this.setElStyle(el)
-    this.width = style.width
-    this.height = style.height
+    this._el = el
+    this._ctx = el.getContext('2d')
+    this._defaultFontColor = defaultFontColor
+    // 弹幕移动速度，先不使用
+    this.speedRatio = speedRatio
+    this._barragePlayList = []
+    this._fontSize = 12 // 先写死吧
+    this._lineHeight = Math.floor(this._fontSize * 1.4)
+    // 这个是用来记录各种类型的弹幕占用空间情况的,如果有空间，就整齐的放，否则就随机
+    this._barrageUsage = {
+      right: [],
+      static: []
+    }
+    this._init()
+    this._ctx.font = `${this._fontSize}px serif`
+    this._ctx.save()
+    console.log('called')
+    window.requestAnimationFrame(this._draw.bind(this))
   }
-  setElStyle (el) {
+  _init () {
+    let style = this._setElStyle(this._el)
+    this._width = style.width
+    this._height = style.height
+    this._initBarrageUsage()
+  }
+  _initBarrageUsage () {
+    this._barrageUsage.right = this._barrageUsage.static = Array.from({
+      length: Math.floor(this._height / this._lineHeight)
+    }, () => false)
+  }
+  _setElStyle (el) {
     let style = el.style
     style.position = 'absolute'
     // style.left = '0'
@@ -19,5 +46,63 @@ export default class Barrage {
     el.width = width
     el.height = height
     return {width, height}
+  }
+  // 计算出现的位置，并修改barrageUsage
+  _initBarrage (mode, text) {
+    let res = {}
+    switch (mode) {
+      case 'right':
+        res.x = this._width
+        let index = this._barrageUsage.right.indexOf(false)
+        if (~index) {
+          this._barrageUsage.right[index] = true
+          res.y = Math.floor((index + 1) * this._lineHeight)
+          res.index = index
+        } else {
+          res.y = Math.floor((Math.random() + 1) * this._height)
+        }
+        res.offset = Math.floor(this._width / 5 / 60) // 5是希望有5秒，60是requireAnimationFrame
+        break
+      case 'static':
+        break
+    }
+    return res
+  }
+  // 使用addBarrage添加的弹幕，会立刻放到屏幕上
+  addBarrage (arr) {
+    arr.forEach(barrage => {
+      let {color = this._defaultFontColor, mode = 'right', text} = barrage
+      let detail = this._initBarrage(mode, text)
+      this._barragePlayList.push(Object.assign(detail, {
+        color,
+        text,
+        mode
+      }))
+    })
+  }
+  autoAddBarrage (arr) {
+  }
+  timeUpdate (time) {
+  }
+  _draw () {
+    if (this._barragePlayList.length) {
+      this._ctx.clearRect(0, 0, this._width, this._height)
+      for (let index = 0; index < this._barragePlayList.length; index++) {
+        let item = this._barragePlayList[index]
+        this._ctx.fillStyle = item.color
+        this._ctx.fillText(item.text, item.x, item.y)
+        if (item.mode === 'right') {
+          let fontWidth = this._ctx.measureText(item.text).width
+          item.x -= item.offset
+          if (item.x + fontWidth < 0) {
+            if (item.index) this._barrageUsage.right[item.index] = false
+            this._barragePlayList.splice(index, 1)
+            index--
+          }
+        }
+        this._ctx.restore()
+      }
+    }
+    window.requestAnimationFrame(this._draw.bind(this))
   }
 }

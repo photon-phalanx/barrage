@@ -1,0 +1,12 @@
+class Barrage 传入config
+{
+    el: string/element,
+    defaultFontColor: string,
+    speedRatio: number
+}
+
+{
+    color: string,
+    mode:　string,
+    text: string
+}

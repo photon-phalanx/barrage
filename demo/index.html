@@ -6,6 +6,7 @@
     <link href="normalize.css">
     <style>
         .wrapper {
+            background-color: #000;
             position: relative;
             width: 500px;
             height: 300px;
@@ -21,8 +22,19 @@
 </body>
 <script src="/assets/barrage.js"></script>
 <script>
-    new window.Barrage.default({
+    let barrage = new window.Barrage.default({
       el: 'canvas'
     })
+    barrage.addBarrage([
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'}
+    ])
 </script>
 </html>
