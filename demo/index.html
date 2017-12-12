@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="normalize.css">
+    <style>
+        .wrapper {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <canvas id="canvas"></canvas>
+</div>
+</body>
+<script src="/assets/barrage.js"></script>
+<script>
+    new window.Barrage.default({
+      el: 'canvas'
+    })
+</script>
+</html>

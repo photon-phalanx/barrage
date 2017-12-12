@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/barrage.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.js --open --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.js --content-base ./demo --open --hot",
     "build": "cross-env NODE_ENV=production webpack --config build/webpack.prod.js --progress --hide-modules"
   },
   "keywords": [

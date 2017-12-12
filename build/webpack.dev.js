@@ -10,7 +10,9 @@ module.exports = {
   output: {
     path: resolve('dist'),
     filename: 'barrage.js',
-    publicPath: '/assets/'
+    publicPath: '/assets/',
+    library: 'Barrage',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
