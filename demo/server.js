@@ -16,6 +16,7 @@ function shuffle (arr) {
 
 function generateArr () {
   let len = Math.floor(length * Math.random())
+  len = Math.min(len, 10)
   let arr = shuffle(data.slice()).splice(0, len)
   return arr
 }

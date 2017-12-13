@@ -7,12 +7,11 @@ export default class Barrage {
     let {el, defaultFontColor = '#fff', speedRatio = 1} = config
     if (typeof el === 'string') el = document.querySelector(`#${el}`)
     this._el = el
-    this._ctx = el.getContext('2d')
     this._defaultFontColor = defaultFontColor
     // 弹幕移动速度，先不使用
     this.speedRatio = speedRatio
     this._barragePlayList = []
-    this._fontSize = 12 // 先写死吧
+    this._fontSize = 14 // 先写死吧
     this._lineHeight = Math.floor(this._fontSize * 1.4)
     // 这个是用来记录各种类型的弹幕占用空间情况的,如果有空间，就整齐的放，否则就随机
     this._barrageUsage = {
@@ -20,9 +19,14 @@ export default class Barrage {
       static: []
     }
     this._init()
-    this._ctx.font = `${this._fontSize}px serif`
-    this._ctx.save()
-    console.log('called')
+    // 设置初始canvas
+    this._cacheCanvas = document.createElement('canvas')
+    this._cacheCanvas.width = this._width
+    this._cacheCanvas.height = this._height
+    this._ctx = el.getContext('2d')
+    this._cacheCanvasCtx = this._cacheCanvas.getContext('2d')
+    this._cacheCanvasCtx.font = `${this._fontSize}px Arial`
+    this._cacheCanvasCtx.save()
     window.requestAnimationFrame(this._draw.bind(this))
   }
   _init () {
@@ -92,7 +96,7 @@ export default class Barrage {
   // 处理弹幕状态，返回true则需要从_barragePlayList中移除这条弹幕
   _dealNextTick (item) {
     if (item.mode === 'right') {
-      let fontWidth = this._ctx.measureText(item.text).width
+      let fontWidth = this._cacheCanvasCtx.measureText(item.text).width
       item.x -= item.offset
       if (item.x + fontWidth + PADDING < this._width) { // 弹幕完全显示了，并且空出间距了
         if (item.index) this._barrageUsage.right[item.index] = false
@@ -103,19 +107,22 @@ export default class Barrage {
   }
   _draw () {
     if (this._barragePlayList.length) {
-      this._ctx.clearRect(0, 0, this._width, this._height)
+      // 测试双缓冲……
+      this._cacheCanvasCtx.clearRect(0, 0, this._width, this._height)
       for (let index = 0; index < this._barragePlayList.length; index++) {
         let item = this._barragePlayList[index]
-        this._ctx.fillStyle = item.color
-        this._ctx.fillText(item.text, item.x, item.y)
+        this._cacheCanvasCtx.fillStyle = item.color
+        this._cacheCanvasCtx.fillText(item.text, item.x, item.y)
         let removeFlag = this._dealNextTick(item)
         if (removeFlag) {
           this._barragePlayList.splice(index, 1)
           index--
         }
-        this._ctx.restore()
+        this._cacheCanvasCtx.restore()
       }
     }
+    this._ctx.clearRect(0, 0, this._width, this._height)
+    this._ctx.drawImage(this._cacheCanvas, 0, 0, this._width, this._height)
     window.requestAnimationFrame(this._draw.bind(this))
   }
 }
