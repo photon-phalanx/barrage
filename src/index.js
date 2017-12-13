@@ -11,6 +11,7 @@ export default class Barrage {
     // 弹幕移动速度，先不使用
     this.speedRatio = speedRatio
     this._barragePlayList = []
+    this._autoAddTmpList = []
     this._fontSize = 14 // 先写死吧
     this._lineHeight = Math.floor(this._fontSize * 1.4)
     // 这个是用来记录各种类型的弹幕占用空间情况的,如果有空间，就整齐的放，否则就随机
@@ -50,7 +51,6 @@ export default class Barrage {
     // style.top = '0'
     // style.bottom = '0'
     let {width, height} = el.parentNode.getBoundingClientRect()
-    console.log(width)
     el.width = width
     el.height = height
     return {width, height}
@@ -58,7 +58,6 @@ export default class Barrage {
   // 计算出现的位置，并修改barrageUsage
   _initBarrage (mode, text) {
     let res = {}
-    console.log(mode)
     if (mode === 'right') {
       res.x = this._width
       let index = this._barrageUsage[mode].indexOf(false)
@@ -86,14 +85,10 @@ export default class Barrage {
       }
       res.leftCount = SECOND * 60
     }
-    console.log(res)
-    console.log(this._barrageUsage)
     return res
   }
   // 使用addBarrage添加的弹幕，会立刻放到屏幕上
   addBarrage (arr) {
-    console.log(this._barrageUsage)
-    console.log('___________________________')
     arr.forEach(barrage => {
       let {color = this._defaultFontColor, mode = 'right', text} = barrage
       let detail = this._initBarrage(mode, text)
@@ -105,8 +100,30 @@ export default class Barrage {
     })
   }
   autoAddBarrage (arr) {
+    arr = arr.filter((item) => {
+      return typeof item.time === 'number'
+    })
+    this._autoAddTmpList = this._autoAddTmpList.concat(arr)
   }
   timeUpdate (time) {
+    let addArr = []
+    let arr = this._autoAddTmpList
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].time <= time) {
+        let item = arr.splice(i, 1)[0]
+        i--
+        addArr.push(item)
+      }
+    }
+    this.addBarrage(addArr)
+  }
+  // 清除自动添加的弹幕
+  cleanAutoAddBarrageList () {
+    this._autoAddTmpList = []
+    return true
+  }
+  // 稍有点复杂，等待实现
+  hideBarrage () {
   }
   // 处理弹幕状态，返回true则需要从_barragePlayList中移除这条弹幕
   _dealNextTick (item) {

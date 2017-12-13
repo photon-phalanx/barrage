@@ -5,8 +5,22 @@ class Barrage 传入config
     speedRatio: number
 }
 
+addBarrage
 {
     color: string,
     mode:　string,
     text: string
 }
+
+{
+    time: number,
+    color: string,
+    mode:　string,
+    text: string
+}
+
+本身这个Barrage并不维护时间数据，仅仅只是有弹幕添加进来就直接播放，也不会长时间维持弹幕信息
+autoAddBarrage也一样，他只是暂时做一个缓存，等待时间来到
+当timeUpdate调用的时候，会把该时间以前的所有弹幕全部播放，然后清空这些数据，所以如果往回拖动，还需要重新添加
+既然Barrage本身不维护时间，所以不在意time传的时间格式，只要是number就可以，用大于小于来判断时间
+没有time的数据直接全部剔除
