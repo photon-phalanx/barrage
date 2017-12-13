@@ -1,3 +1,5 @@
+const PADDING = 30 // 从右往左的弹幕，前后2条的间距
+
 export default class Barrage {
   constructor (config) {
     this._width = 0
@@ -59,7 +61,10 @@ export default class Barrage {
           res.y = Math.floor((index + 1) * this._lineHeight)
           res.index = index
         } else {
-          res.y = Math.floor((Math.random() + 1) * this._height)
+          console.log('else')
+          res.y = Math.floor(Math.random() * (this._height - this._lineHeight) + this._lineHeight)
+          console.log(res.y)
+          res.index = null
         }
         res.offset = Math.floor(this._width / 5 / 60) // 5是希望有5秒，60是requireAnimationFrame
         break
@@ -84,6 +89,18 @@ export default class Barrage {
   }
   timeUpdate (time) {
   }
+  // 处理弹幕状态，返回true则需要从_barragePlayList中移除这条弹幕
+  _dealNextTick (item) {
+    if (item.mode === 'right') {
+      let fontWidth = this._ctx.measureText(item.text).width
+      item.x -= item.offset
+      if (item.x + fontWidth + PADDING < this._width) { // 弹幕完全显示了，并且空出间距了
+        if (item.index) this._barrageUsage.right[item.index] = false
+        item.index = null
+      }
+      if (item.x + fontWidth < 0) return true // 弹幕移动到最左边
+    }
+  }
   _draw () {
     if (this._barragePlayList.length) {
       this._ctx.clearRect(0, 0, this._width, this._height)
@@ -91,14 +108,10 @@ export default class Barrage {
         let item = this._barragePlayList[index]
         this._ctx.fillStyle = item.color
         this._ctx.fillText(item.text, item.x, item.y)
-        if (item.mode === 'right') {
-          let fontWidth = this._ctx.measureText(item.text).width
-          item.x -= item.offset
-          if (item.x + fontWidth < 0) {
-            if (item.index) this._barrageUsage.right[item.index] = false
-            this._barragePlayList.splice(index, 1)
-            index--
-          }
+        let removeFlag = this._dealNextTick(item)
+        if (removeFlag) {
+          this._barragePlayList.splice(index, 1)
+          index--
         }
         this._ctx.restore()
       }
