@@ -1,5 +1,5 @@
 const PADDING = 30 // 从右往左的弹幕，前后2条的间距
-
+const SECOND = 5 // 弹幕显示的时间
 export default class Barrage {
   constructor (config) {
     this._width = 0
@@ -36,9 +36,11 @@ export default class Barrage {
     this._initBarrageUsage()
   }
   _initBarrageUsage () {
-    this._barrageUsage.right = this._barrageUsage.static = Array.from({
-      length: Math.floor(this._height / this._lineHeight)
-    }, () => false)
+    for (let i in this._barrageUsage) {
+      this._barrageUsage[i] = Array.from({
+        length: Math.floor(this._height / this._lineHeight)
+      }, () => false)
+    }
   }
   _setElStyle (el) {
     let style = el.style
@@ -56,29 +58,42 @@ export default class Barrage {
   // 计算出现的位置，并修改barrageUsage
   _initBarrage (mode, text) {
     let res = {}
-    switch (mode) {
-      case 'right':
-        res.x = this._width
-        let index = this._barrageUsage.right.indexOf(false)
-        if (~index) {
-          this._barrageUsage.right[index] = true
-          res.y = Math.floor((index + 1) * this._lineHeight)
-          res.index = index
-        } else {
-          console.log('else')
-          res.y = Math.floor(Math.random() * (this._height - this._lineHeight) + this._lineHeight)
-          console.log(res.y)
-          res.index = null
-        }
-        res.offset = Math.floor(this._width / 5 / 60) // 5是希望有5秒，60是requireAnimationFrame
-        break
-      case 'static':
-        break
+    console.log(mode)
+    if (mode === 'right') {
+      res.x = this._width
+      let index = this._barrageUsage[mode].indexOf(false)
+      if (~index) {
+        this._barrageUsage[mode][index] = true
+        res.y = Math.floor((index + 1) * this._lineHeight - (this._lineHeight - this._fontSize) / 2)
+        res.index = index
+      } else {
+        res.y = Math.floor(Math.random() * (this._height - this._lineHeight) + this._lineHeight)
+        res.index = null
+      }
+      res.offset = Math.floor(this._width / SECOND / 60) // 5是希望有5秒，60是requireAnimationFrame
+    } else if (mode === 'static') {
+      let fontWidth = this._cacheCanvasCtx.measureText(text).width
+      res.x = (this._width - fontWidth) / 2
+      if (res.x < 0) res.x = 0
+      let index = this._barrageUsage[mode].indexOf(false)
+      if (~index) {
+        this._barrageUsage[mode][index] = true
+        res.y = Math.floor(this._height - index * this._lineHeight - (this._lineHeight - this._fontSize) / 2)
+        res.index = index
+      } else {
+        res.y = Math.floor(Math.random() * (this._height - this._lineHeight) + this._lineHeight)
+        res.index = null
+      }
+      res.leftCount = SECOND * 60
     }
+    console.log(res)
+    console.log(this._barrageUsage)
     return res
   }
   // 使用addBarrage添加的弹幕，会立刻放到屏幕上
   addBarrage (arr) {
+    console.log(this._barrageUsage)
+    console.log('___________________________')
     arr.forEach(barrage => {
       let {color = this._defaultFontColor, mode = 'right', text} = barrage
       let detail = this._initBarrage(mode, text)
@@ -99,10 +114,17 @@ export default class Barrage {
       let fontWidth = this._cacheCanvasCtx.measureText(item.text).width
       item.x -= item.offset
       if (item.x + fontWidth + PADDING < this._width) { // 弹幕完全显示了，并且空出间距了
-        if (item.index) this._barrageUsage.right[item.index] = false
+        if (item.index) this._barrageUsage[item.mode][item.index] = false
         item.index = null
       }
       if (item.x + fontWidth < 0) return true // 弹幕移动到最左边
+    } else if (item.mode === 'static') {
+      item.leftCount--
+      if (item.leftCount < 0) {
+        if (item.index) this._barrageUsage[item.mode][item.index] = false
+        item.index = null
+        return true
+      }
     }
   }
   _draw () {
