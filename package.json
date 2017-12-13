@@ -11,7 +11,8 @@
     "barrage"
   ],
   "dependencies": {
-    "axios": "^0.17.1"
+    "axios": "^0.17.1",
+    "ws": "^3.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

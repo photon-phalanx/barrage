@@ -25,20 +25,29 @@
     let barrage = new window.Barrage.default({
       el: 'canvas'
     })
-    barrage.addBarrage([
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'},
-      {text: '123'}
-    ])
+    // barrage.addBarrage([
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'},
+    //   {text: '123'}
+    // ])
+    const socket = new WebSocket('ws://127.0.0.1:10102')
+    socket.addEventListener('open', function (event) {
+      socket.send('start')
+    })
+    socket.addEventListener('message', function (event) {
+      let {data} = event
+      console.log(data)
+      barrage.addBarrage(JSON.parse(data))
+    })
 </script>
 </html>
