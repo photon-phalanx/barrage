@@ -16,8 +16,11 @@ function shuffle (arr) {
 
 function generateArr () {
   let len = Math.floor(length * Math.random())
-  len = Math.min(len, 10)
   let arr = shuffle(data.slice()).splice(0, len)
+  for (let i = 0; i < len; i++) {
+    if (i < len / 2) arr[i].mode = 'top'
+    else arr[i].mode = 'bottom'
+  }
   return arr
 }
 
