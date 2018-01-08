@@ -6,12 +6,12 @@ function resolve(dir) {
 }
 
 module.exports = {
-  entry: './src/index',
+  entry: './src/inUse',
   output: {
     path: resolve('dist'),
     filename: 'barrage.js',
-    // library: 'barrage',
-    // libraryTarget: 'umd'
+    library: 'barrage',
+    libraryTarget: 'umd'
   },
   module: {
     rules: [

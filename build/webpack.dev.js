@@ -6,7 +6,7 @@ function resolve(dir) {
 }
 
 module.exports = {
-  entry: './src/index',
+  entry: './src/inUse',
   output: {
     path: resolve('dist'),
     filename: 'barrage.js',
@@ -37,7 +37,7 @@ module.exports = {
     // noInfo: true,
     noInfo: false,
     overlay: true,
-    port: 3000,
+    port: 10011,
     proxy: {
       '/api/*': {
         target: 'http://127.0.0.1:8000',
