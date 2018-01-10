@@ -9,9 +9,9 @@ module.exports = {
   entry: './src/inUse',
   output: {
     path: resolve('dist'),
-    filename: 'barrage.js',
-    library: 'barrage',
-    libraryTarget: 'umd'
+    filename: 'barrage.js'
+    // library: 'barrage',
+    // libraryTarget: 'umd'
   },
   module: {
     rules: [

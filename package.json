@@ -12,6 +12,8 @@
   ],
   "dependencies": {
     "axios": "^0.17.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0",
     "express": "^4.16.2",
     "ws": "^3.3.2"
   },
@@ -19,8 +21,11 @@
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
+    "babel-plugin-istanbul": "^4.1.1",
+    "babel-plugin-transform-runtime": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.22.0",
     "cross-env": "^5.0.5",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",

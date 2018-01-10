@@ -8,8 +8,8 @@
         .wrapper {
             background-color: #000;
             position: relative;
-            width: 500px;
-            height: 300px;
+            width: 100%;
+            height: 500px;
             box-sizing: border-box;
             border: 1px solid #ccc;
         }
@@ -21,10 +21,54 @@
 </div>
 </body>
 <script src="/assets/barrage.js"></script>
+<!--<script src="/barrage.js"></script>-->
 <script>
-    let barrage = new window.Barrage.default({
-      el: 'canvas'
-    })
+  let barrage = new window.barrage.default({
+  // let barrage = new window.barrage.default({
+    el: 'canvas',
+    fontSize: 80,
+    imageHeight: 150,
+    color: '#66ccff',
+    hideStopMethod: false
+  })
+
+  setTimeout(() => {
+    barrage.addBarrage([
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '111111111111111111111'},
+      {text: '123'},
+      {text: '112313213214ds23'},
+    ])
+  }, 1000)
+  setTimeout(() => {
+    barrage.addBarrage([
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {mode: 'image', src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515424469891&di=1d16c23a9115d1178d9db910cbb39cd9&imgtype=0&src=http%3A%2F%2Fimg44.nipic.com%2F20130510%2F12525362_061151520000_1.jpg'},
+      {text: '123'},
+      {text: '123'},
+      {text: '123'},
+      {text: '111111111111111111111'},
+      {text: '123'},
+      {text: '112313213214ds23'},
+    ])
+    console.log('barrage added')
+  }, 10000)
     // let arr = []
     // let time = 20
     // for (let i = 0; i < 100; i++) {
@@ -37,14 +81,14 @@
     // barrage.autoAddBarrage(arr)
 
 
-    const socket = new WebSocket('ws://127.0.0.1:10102')
-    socket.addEventListener('open', function (event) {
-      socket.send('start')
-    })
-    socket.addEventListener('message', function (event) {
-      let {data} = event
-      console.log(data)
-      barrage.addBarrage(JSON.parse(data))
-    })
+    // const socket = new WebSocket('ws://127.0.0.1:10102')
+    // socket.addEventListener('open', function (event) {
+    //   socket.send('start')
+    // })
+    // socket.addEventListener('message', function (event) {
+    //   let {data} = event
+    //   console.log(data)
+    //   barrage.addBarrage(JSON.parse(data))
+    // })
 </script>
 </html>

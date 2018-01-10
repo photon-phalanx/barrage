@@ -30,6 +30,7 @@ export default class Barrage {
     this._ctx = ''
     this.initConfig = config
     this._isShow = true
+    this._continueRecursion = false
     // 但是,cencelAnimationFrames有兼容性问题，可能将requestAnimationFrame放到init之外
     this.animationFrames = 0
     this._barrageTypeHandler = {
@@ -39,7 +40,8 @@ export default class Barrage {
       color: '#ffffff',
       speedRatio: 1,
       fontSize: 14,
-      imageHeight: 30
+      imageHeight: 30,
+      hideStopMethod: true // 如果为true，则在隐藏弹幕的时候清空弹幕列表，并停止递归，性能较好。若为false，只是看不到弹幕，但弹幕仍然在后面移动，重新显示弹幕时能看到对应的位置。
     }
     this._barrageUsage = {
       right: [],
@@ -69,6 +71,7 @@ export default class Barrage {
         prepareBarrage (barrage) {
           barrage.x = self._width
           self._barrageWaitList[barrage.mode] && self._barrageWaitList[barrage.mode].push(barrage)
+          self._startDraw()
         },
         calcPosition (barrage) {
           let fontWidth = self._cacheCanvasCtx.measureText(barrage.text).width
@@ -94,11 +97,6 @@ export default class Barrage {
       },
       image: {
         initBarrageUsage (i) {
-          console.log('do')
-          console.log(self._config.imageHeight + PADDING)
-          console.log(self._height)
-          console.log(self._height / (self._config.imageHeight + PADDING))
-          console.log(Math.floor(self._height / (self._config.imageHeight + PADDING)))
           self._barrageUsage[i] = Array.from({
             length: Math.floor(self._height / (self._config.imageHeight + PADDING))
           }, () => null)
@@ -109,6 +107,7 @@ export default class Barrage {
           barrage.img.onload = () => {
             barrage.width = barrage.img.width
             self._barrageWaitList[barrage.mode] && self._barrageWaitList[barrage.mode].push(barrage)
+            self._startDraw()
           }
           barrage.img.src = barrage.src
         },
@@ -136,8 +135,21 @@ export default class Barrage {
     })
   }
 
-  toggleShow () {
-    this._isShow = !this._isShow
+  _startDraw () {
+    if (!this._continueRecursion) {
+      this._continueRecursion = true
+      this.animationFrames = window.requestAnimationFrame(this._draw.bind(this))
+    }
+  }
+
+  _clearBarrage () {
+    this._initBarrageUsage()
+    for (let type in this._barragePlayList) {
+      this._barragePlayList[type] = []
+    }
+    for (let type in this._barrageWaitList) {
+      this._barrageWaitList[type] = []
+    }
   }
 
   _setConfig (config) {
@@ -156,14 +168,13 @@ export default class Barrage {
   }
 
   _init () {
-    if (this.animationFrames) console.log(123)
     typeof this.initConfig.el === 'string' ? this._el = document.querySelector(`#${this.initConfig.el}`) : this._el = this.initConfig.el
     if (!this._el) throw new Error('未找到挂载的元素,请检查el选项')
     this._setConfig(this.initConfig)
     this._setCanvasDefault(this._el)
     this._initBarrageUsage()
     this._initCacheCanvas()
-    this.animationFrames = window.requestAnimationFrame(this._draw.bind(this))
+    this._startDraw()
   }
 
   // 双缓冲优化，这个canvas是隐藏的，在上面画完后，1次性复制到显示出来的canvas上面
@@ -217,19 +228,6 @@ export default class Barrage {
     }
   }
 
-  // 直接添加到等待列表中
-  addBarrage (arr) {
-    arr.forEach(barrage => {
-      barrage = Object.assign({
-        mode: 'right',
-        color: this._config.color,
-        // 这里可能以后要根据大中小来修改fontSize的设置
-        fontSize: this._config.fontSize
-      }, barrage)
-      this._barrageTypeHandler[barrage.mode].prepareBarrage(barrage)
-    })
-  }
-
   _draw () {
     if (this._isShow) {
       this._cacheCanvasCtx.clearRect(0, 0, this._width, this._height)
@@ -247,6 +245,65 @@ export default class Barrage {
       this._ctx.clearRect(0, 0, this._width, this._height)
     }
     this._handleNextTick()
-    this.animationFrames = window.requestAnimationFrame(this._draw.bind(this))
+    this._designRecursion()
+    this._continueRecursion && window.requestAnimationFrame(this._draw.bind(this))
+  }
+
+  _designRecursion () {
+    if (!this._isShow) {
+      this._continueRecursion = false
+      return
+    }
+    let stopFlag = true
+    for (let type in this._barragePlayList) {
+      if (this._barragePlayList.hasOwnProperty(type)) {
+        if (this._barragePlayList[type].length) stopFlag = false
+      }
+    }
+    if (stopFlag) {
+      this._continueRecursion = false
+      return
+    }
+    this._continueRecursion = true
+  }
+
+  // 直接添加到等待列表中
+  addBarrage (arr) {
+    if (!this._isShow) return
+    arr.forEach(barrage => {
+      barrage = Object.assign({
+        mode: 'right',
+        color: this._config.color,
+        // 这里可能以后要根据大中小来修改fontSize的设置
+        fontSize: this._config.fontSize
+      }, barrage)
+      this._barrageTypeHandler[barrage.mode].prepareBarrage(barrage)
+    })
+  }
+
+  toggleShow () {
+    this._isShow = !this._isShow
+    if (this._isShow) this._startDraw()
+    else {
+      if (this._config.hideStopMethod) this._clearBarrage()
+    }
+  }
+
+  show () {
+    this._isShow = true
+    this._startDraw()
+  }
+
+  hide () {
+    this._isShow = false
+    if (this._config.hideStopMethod) this._clearBarrage()
+  }
+
+  refresh () {
+    this._setCanvasDefault(this._el)
+    this._initBarrageUsage()
+    this._clearBarrage()
+    this._cacheCanvasCtx.clearRect(0, 0, this._width, this._height)
+    this._startDraw()
   }
 }
