@@ -11,7 +11,7 @@ module.exports = {
     path: resolve('dist'),
     filename: 'barrage.js',
     publicPath: '/assets/',
-    library: 'Barrage',
+    library: 'barrage',
     libraryTarget: 'umd',
   },
   module: {
